@@ -121,8 +121,8 @@ export function display(m) {
 // 6  +   +   +---+   +---+   +---+---+ v2 [true, true, null, true, null, true]
 // 7  |   |           |   |   |       | h3 [null, true, true, null, null, null, true]
 // 8  +   +---+---+   +   +   +---+   + v3 [true, null, null, true, true, true, null, true]
-// 9  |                   |             h4 [true, true, true, true, null, true, true]
-// 10 +---+---+---+---+---+---+---+---+
+// 9  |                   |           | h4 [true, true, true, true, null, true, true]
+// 10 +---+---+---+---+---+---+---+   +
 
 // 0: (17) ['x', ' ', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x']
 // 1: (17) ['x', ' ', ' ', ' ', ' ', ' ', 'x', ' ', ' ', ' ', ' ', ' ', 'x', ' ', ' ', ' ', 'x']

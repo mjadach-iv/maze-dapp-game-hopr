@@ -44,21 +44,31 @@
   fill:rgba(255, 255, 255, 0.678);
 }
 
-
-.hopr-logo-maze-player-0 {
+.hopr-logo-maze-player-container[animation="true"] {
   animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   perspective: 1000px;
 }
 
-
-.hopr-logo-maze-player-0-container[animation="true"] {
-  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  perspective: 1000px;
+.hopr-logo-maze-player-container[win="true"] {
+  animation: App-logo-spin infinite 1s linear;
+  transform-box: fill-box;
+  transform-origin: center;
 }
+
+.hopr-logo-maze-player-container.player-2 circle.hopr-circle {
+  fill: rgb(255 119 217)!important;
+}
+
+.hopr-logo-maze-player-container.player-1[overlap="true"] {
+  transform: scale(0.5) translate3d(43px, 31px, 0);
+}
+
+.hopr-logo-maze-player-container.player-2[overlap="true"] {
+  transform: scale(0.5) translate3d(35px, 0px, 0);
+}
+
 
 @keyframes shake {
   10%, 90% {
@@ -76,12 +86,6 @@
   40%, 60% {
     transform: translate3d(1px, 0, 0);
   }
-}
-
-.hopr-logo-maze-player-0-container[win="true"] {
-  animation: App-logo-spin infinite 1s linear;
-  transform-box: fill-box;
-  transform-origin: center;
 }
 
 @keyframes App-logo-spin {
