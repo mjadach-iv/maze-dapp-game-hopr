@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './index.css';
+//import './index.css';
 
 import createMaze from '../../functions/maze'
 import { display } from '../../functions/maze'
-import { ReactComponent as ReactLogo2 } from '../hopr-logo/hopr-icon.svg';
-
+//import { ReactComponent as ReactLogo2 } from '../hopr-logo/hopr-icon.svg';
+import  ReactLogo2 from '../hopr-logo/hopr-icon.svg';
 
 
 const rectWidth = 40;
@@ -13,7 +13,6 @@ const mazeHeight = 9;
 const mazeWidth = 17;
 // const mazeHeight = 5;
 // const mazeWidth = 8;
-
 
 function App(props) {
   const [maze, setMaze] = useState(null);
