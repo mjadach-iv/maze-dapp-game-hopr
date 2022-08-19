@@ -14,7 +14,7 @@ const mazeWidth = 17;
 // const mazeHeight = 5;
 // const mazeWidth = 8;
 
-function App(props) {
+function Board(props) {
   const [maze, setMaze] = useState(null);
   const [playerPosition, setPlayerPosition] = useState([0,1]);
   const [shake, setShake] = useState(false);
@@ -23,11 +23,15 @@ function App(props) {
   const winRef = useRef();
   mazeRef.current = maze;
   winRef.current = win;
-
+  
   //Multiplayer
   const [playerPosition2, setPlayerPosition2] = useState([0,1]);
   const [shake2, setShake2] = useState(false);
   const [overlap, setOverlap] = useState(true);
+
+  useEffect(() => {
+    console.log('Board rendered')
+  }, []);
 
   useEffect(() => {
     resetGame();
@@ -65,16 +69,27 @@ function App(props) {
     }
   }, [shake2]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     props.childFunc.current = resetGame
   }, [])
+
+
+  useEffect(() => {
+    console.log('Board, useEffect:', props.remotePos)
+    setPlayerPosition2(props.remotePos);
+  }, [props.remotePos])
+
+  // const movedTo = (input) => {
+  //   console.log(props)
+  //   props.newPos(input);
+  // }
 
   const resetGame = () => {
   //  const mazeObj = createMaze(mazeWidth,mazeHeight,true);
     const mazeObj = createMaze(mazeWidth,mazeHeight,false);
-    console.log(mazeObj);
+  //  console.log('mazeObj', mazeObj);
     const draw = display(mazeObj);
-    console.log(draw);
+   // console.log('draw', draw);
 
     setMaze(mazeObj.array)
     setPlayerPosition([0,1]);
@@ -94,7 +109,11 @@ function App(props) {
     if (event.code === "ArrowUp") {
       setPlayerPosition((poz) => {
         const canMove = poz[0]-1 >= 0 && maze[poz[0]-1][poz[1]] === ' ';
-        if(canMove) return [poz[0]-1,poz[1]]
+        if(canMove) {
+          let newPos = [poz[0]-1,poz[1]];
+          props.newPlayerPosition(newPos);
+          return newPos;
+        }
         else {
           setShake(true);
           return poz
@@ -105,7 +124,11 @@ function App(props) {
     else if (event.code === "ArrowDown") {
       setPlayerPosition((poz) => {
         const canMove = poz[0]+1 < maze.length && maze[poz[0]+1][poz[1]] === ' ';
-        if(canMove) return [poz[0]+1,poz[1]]
+        if(canMove) {
+          let newPos = [poz[0]+1,poz[1]];
+          props.newPlayerPosition(newPos);
+          return newPos;
+        }
         else {
           setShake(true);
           return poz
@@ -116,7 +139,11 @@ function App(props) {
     else if (event.code === "ArrowLeft") {
       setPlayerPosition((poz) => {
         const canMove = maze[poz[0]][poz[1]-1] === ' ';
-        if(canMove) return [poz[0],poz[1]-1]
+        if(canMove) {
+          let newPos = [poz[0],poz[1]-1];
+          props.newPlayerPosition(newPos);
+          return newPos;
+        }
         else {
           setShake(true);
           return poz
@@ -127,7 +154,11 @@ function App(props) {
     else if (event.code === "ArrowRight") {
       setPlayerPosition((poz) => {
         const canMove = maze[poz[0]][poz[1]+1] === ' ';
-        if(canMove) return [poz[0],poz[1]+1]
+        if(canMove) {
+          let newPos = [poz[0],poz[1]+1];
+          props.newPlayerPosition(newPos);
+          return newPos;
+        }
         else {
           setShake(true);
           return poz
@@ -249,4 +280,4 @@ function App(props) {
   );
 }
 
-export default App;
+export default Board;

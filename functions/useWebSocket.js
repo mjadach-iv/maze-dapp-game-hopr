@@ -17,7 +17,7 @@ const useWebsocket = (settings) => {
   const [reconnectTmsp, setReconnectTmsp] = useState();
   const [state, setState] = useImmer({ status: "DISCONNECTED" });
 
-  const socketRef = useRef<WebSocket>();
+  const socketRef = useRef();
 
   const setReconnectTmspDebounced = debounce((timestamp) => {
     setReconnectTmsp(timestamp);

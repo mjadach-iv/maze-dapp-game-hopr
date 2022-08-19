@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from '@emotion/styled'
 import Button from '@mui/material/Button';
 
-import { ReactComponent as ReactLogo2 } from '../hopr-logo/hopr-icon.svg';
+import ReactLogo2 from '../hopr-logo/hopr-icon.svg';
 
 
 const HoprButton = styled(Button)`
