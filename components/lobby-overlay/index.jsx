@@ -53,6 +53,18 @@ const Row = styled.div`
   gap: 16px;
 `
 
+const Lobbies = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+  min-height: 100px;
+  width: 100%;
+  overflow: hidden;
+  overflow-y: scroll;
+  background: rgba(0,0,0,0.05);
+  padding: 8px;
+`
+
 const HoprButton = styled(Button)`
   margin-top: 32px;
   color: #ccc;
@@ -75,10 +87,16 @@ const HoprButton = styled(Button)`
 
 function App(props) {
   const [networkWorking, set_networkWorking] = useState(false);
-  const [lobbyId, set_lobbyId] = useState(null);
   const [lobbies, set_lobbies] = useState([]);
   const [peerId, set_peerId] = useState(null);
   const [enviorement, set_enviorement] = useState(null);
+
+  useEffect(() => {
+    set_networkWorking(true);
+    set_enviorement('dev-enviorement');
+    set_peerId('peerId-dev');
+  }, []);
+  
 
   useEffect(() => {
     getLobbies();
@@ -117,7 +135,43 @@ function App(props) {
     );
     const json =  await response.json();
     console.log('response', json);
-    set_lobbyId(json.insertId);
+    props.set_lobbyId(json.lobbyId);
+
+    let tmp = JSON.parse(JSON.stringify(lobbies));
+    tmp.push({id: json.lobbyId, open: 1, players: 1});
+    set_lobbies(tmp);
+
+    setTimeout(()=>{
+      let objDiv = document.getElementById("lobby-list");
+      console.log(objDiv.scrollHeight)
+      objDiv.scrollTop = objDiv.scrollHeight;
+    }, 100)
+
+  };
+
+  async function joinLobby(lobbyId){
+    console.log('joinLobby', lobbyId);
+    let url = `/api/join-lobby`;
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        lobbyId,
+        peerId,
+        enviorement
+      })
+    }
+    );
+    const json =  await response.json();
+    console.log('response', json);
+
+    let tmp = JSON.parse(JSON.stringify(lobbies));
+    let index = tmp.findIndex(lobby => lobby.id === props.lobbyId);
+    tmp[index].players -= 1;
+    index = tmp.findIndex(lobby => lobby.id === lobbyId);
+    tmp[index].players += 1;
+
+    props.set_lobbyId(lobbyId);
+    set_lobbies(tmp);
   };
 
   async function getLobbies() {
@@ -173,19 +227,40 @@ function App(props) {
           </Title>
           <Button 
               variant="outlined"
-              disabled={!networkWorking || lobbyId}
+            //  disabled={!networkWorking || props.lobbyId}
+              disabled={!networkWorking}
               onClick={createLobby}
           >
             Create lobby
           </Button>
         </Row>
         <p>
-          <strong>In lobby ID: </strong>{lobbyId}
+          <strong>In lobby ID: </strong>{ props.lobbyId}
         </p>
         <p>
           <strong>Lobbies online:</strong>
         </p>
-        {JSON.stringify(lobbies)}
+        <Lobbies
+          id='lobby-list'
+        >
+          {
+            lobbies.map(lobby => 
+              <Button 
+                onClick={()=>{
+                  joinLobby(lobby.id);
+              
+                }}
+              >
+                {
+                  lobby.id ===  props.lobbyId ? 
+                  <strong>Lobby {lobby.id}, players: {lobby.players}</strong> :
+                  <>Lobby {lobby.id}, players: {lobby.players ? lobby.players : 0}</>
+                }
+              </Button>
+            )
+          }
+        </Lobbies>
+
         {enviorement}
         
 

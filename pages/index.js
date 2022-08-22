@@ -15,11 +15,14 @@ export default function Home() {
   
   const [win, setWin] = useState(null);
   const [lobby, set_lobby] = useState(true);
+  const [lobbyId, set_lobbyId] = useState(null);
   const childFunc = React.useRef(null);
-  const hopr = React.useRef({apiToken: null, apiEndpoint: null, peerId: null});
+ // const hopr = React.useRef({apiToken: 'apiToken-null', apiEndpoint: 'apiEndpoint-null', peerId: 'peerId-null'});
+  const hopr = React.useRef({apiToken: 'apiToken-null', apiEndpoint: 'apiEndpoint-null', peerId: 'peerId-null'});
   // const [apiToken, set_apiToken] = useState(null);
   // const [apiEndpoint, set_apiEndpoint] = useState(null);
-   const [gotHoprAPI, set_gotHoprAPI] = useState(false);
+  // const [gotHoprAPI, set_gotHoprAPI] = useState(false);
+   const [gotHoprAPI, set_gotHoprAPI] = useState(true);
  // const [peerId, set_peerId] = useState(null);
   const [remotePos, set_remotePos] = useState([0,1]);
 
@@ -44,6 +47,7 @@ export default function Home() {
       fetchData().catch(console.error);
     }
   }, [gotHoprAPI]);
+  
 
   const resetGame = () => {
     setWin(null);
@@ -83,6 +87,8 @@ export default function Home() {
           <LobbyOverlay
             apiEndpoint={hopr.current.apiEndpoint}
             apiToken={hopr.current.apiToken}
+            set_lobbyId={set_lobbyId}
+            lobbyId={lobbyId}
           />
       }
       {
