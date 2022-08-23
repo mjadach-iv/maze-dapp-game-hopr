@@ -19,13 +19,18 @@ const SLobbyOverlay = styled.div`
   top: 0;
   left: 0;
   width: calc( 100vw );
-  height: calc( 100vh );
+  min-height: calc( 100vh );
   padding: 64px;
+  @media only screen and (max-width: 500px) {
+    padding: 0px;
+    height: 100%;
+  }
 `
 
 const LobbyContainer = styled.div`
   width: 100%;
   height: 100%;
+  overflow-y: auto;
   background: rgba(250 250 250 / 95%);
   padding: 16px;
   display: flex;
