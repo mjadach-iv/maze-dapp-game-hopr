@@ -44,6 +44,7 @@ function App(props) {
         <HoprButton 
           variant="outlined"
           onClick={props.onPlayAgain}
+          disabled
         >
           Play again
         </HoprButton>

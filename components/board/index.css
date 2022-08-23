@@ -57,7 +57,7 @@
   transform-origin: center;
 }
 
-.hopr-logo-maze-player-container.player-2 circle.hopr-circle {
+.hopr-logo-maze-player-container.player-2 circle.hopr-icon_svg__hopr-circle {
   fill: rgb(255 119 217)!important;
 }
 

@@ -354,12 +354,12 @@ function LobbyOverlay(props) {
                 onClick={()=>{
                   joinLobby(lobby.id);
                 }}
-                disabled={lobby.open === 0}
+                disabled={lobby.open === 0 || lobby.players > 1}
               >
                 {
                   lobby.id ===  props.lobbyId ? 
                   <strong>Lobby {lobby.id}, players: {lobby.players}</strong> :
-                  <>Lobby {lobby.id}, players: {lobby.players ? lobby.players : 0}</>
+                  <>Lobby {lobby.id}, players: {lobby.players ? lobby.players : 0} {lobby.players === 2? '(max)' : ''}</>
                 }
               </Button>
             )
