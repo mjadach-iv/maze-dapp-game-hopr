@@ -58,7 +58,7 @@ export default function Home() {
   function playerNewPosition (input) {
     //sendMessage (apiEndpoint, apiToken, recipientPeerId, message)
     console.log('Index: playerNewPosition', input, hopr.current.apiEndpoint, hopr.current.apiToken, hopr.current.peerId);
-
+    console.log('Index: players', players);
     let message = {
  //     from: hopr.current.peerId,
       postion: input,
@@ -96,7 +96,6 @@ export default function Home() {
       <header className="App-header">
 
       </header>
-      {console.log('---------------------------------------')}
       {
         map &&
         <Board

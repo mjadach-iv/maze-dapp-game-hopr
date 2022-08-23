@@ -248,6 +248,7 @@ function LobbyOverlay(props) {
       set_startingInSeconds(yourLobby.startsAtSec);
       set_startingTimer(true);
       set_tempolaryMapHolder(JSON.parse(yourLobby.map));
+      getPlayers();
     }
   };
 
@@ -267,6 +268,21 @@ function LobbyOverlay(props) {
     set_startingTimer(true);
     props.set_players(json.peers);
     set_tempolaryMapHolder(JSON.parse(json.game[0].map))
+  };
+
+  async function getPlayers(){
+    console.log('getPlayers', props.lobbyId, props.environment);
+    let url = `/api/get-players`;
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        lobbyId: props.lobbyId,
+        environment: props.environment
+      })
+    });
+    const json = await response.json();
+    console.log('response getPlayers', json);
+    props.set_players(json);
   };
   
   return (

@@ -136,3 +136,12 @@ export async function startGame (payload) {
   };
 }
 
+export async function getPlayers (payload) {
+  console.log('MySQL: getPlayers');
+  const { environment, lobbyId } = payload;
+  let query = await queryDB(escape`
+    SELECT peerId FROM maze_players WHERE lobbyId = ${lobbyId} AND enviorement = ${environment} ORDER BY peerId ASC;
+  `);
+  return query;
+}
+
