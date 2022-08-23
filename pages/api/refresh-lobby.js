@@ -2,8 +2,10 @@
 
 
 
-import { createLobby } from '../../functions/mysql';
+import { joinLobby } from '../../functions/mysql';
 
-export default function handler(req, res) {
-  res.status(200).json({ name: 'John Doe' })
+export default async function handler(req, res) {
+  console.log('API: refresh-lobby: ', req.body)
+  const mysql =  await joinLobby(JSON.parse(req.body));
+  res.status(200).json()
 }

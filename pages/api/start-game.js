@@ -2,8 +2,11 @@
 
 
 
-import { createLobby } from '../../functions/mysql';
+import { startGame } from '../../functions/mysql';
 
-export default function handler(req, res) {
-  res.status(200).json({ name: 'John Doe' })
+export default async function handler(req, res) {
+  console.log('API: start-game: ', req.body)
+  const mysql =  await startGame(JSON.parse(req.body));
+ // console.log('mysql: ', mysql)
+  res.status(200).json(mysql)
 }

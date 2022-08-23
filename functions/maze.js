@@ -1,12 +1,13 @@
-export default function maze(y,x, constant) {
+export default function maze(y,x, constant, random) {
     // 8, 5
 	let n=x*y-1;
 	if ( n < 0 ) {
         alert("illegal maze dimensions");return;
     }
+  if(!random) random = Math.random();
 	let horiz =[]; for (var j= 0; j<x+1; j++) horiz[j]= [];
 	let verti =[]; for (var j= 0; j<x+1; j++) verti[j]= [];
-	let here = [Math.floor(Math.random()*x), Math.floor(Math.random()*y)];
+	let here = [Math.floor(random*x), Math.floor(random*y)];
 	let path = [here];
 	let unvisited = [];
 	for (var j = 0; j<x+2; j++) {

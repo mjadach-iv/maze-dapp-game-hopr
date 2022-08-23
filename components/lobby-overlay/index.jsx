@@ -14,7 +14,7 @@ import { getPeerId } from '../../functions/hopr-sdk';
 
 
 
-const LobbyOverlay = styled.div`
+const SLobbyOverlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -82,40 +82,74 @@ const HoprButton = styled(Button)`
   }
 `
 
-
-
-
-function App(props) {
+function LobbyOverlay(props) {
   const [networkWorking, set_networkWorking] = useState(false);
   const [lobbies, set_lobbies] = useState([]);
-  const [peerId, set_peerId] = useState(null);
-  const [enviorement, set_enviorement] = useState(null);
+  const [refreshLobbyOn, set_refreshLobbyOn] = useState(false);
 
-  useEffect(() => {
-    set_networkWorking(true);
-    set_enviorement('dev-enviorement');
-    set_peerId('peerId-dev');
-  }, []);
+  const [startingTimer, set_startingTimer] = useState(false);
+  const [startingInSeconds, set_startingInSeconds] = useState(null);
+
+  // useEffect(() => {
+  //   set_networkWorking(true);
+  //   props.set_environment('dev-environment');
+  //   props.set_peerId('peerId-dev');
+  // }, []);
   
 
   useEffect(() => {
-    getLobbies();
-    const interval = setInterval(() => {
+    let interval;
+    if(networkWorking && !refreshLobbyOn){
       getLobbies();
-    }, 5000);
+      interval = setInterval(() => {
+        getLobbies();
+      }, 5000);
+    }
+    if(networkWorking && refreshLobbyOn){
+      interval = setInterval(() => {
+        getLobbies();
+      }, 1000);
+    }
     return () => clearInterval(interval);
-  }, []);
+  }, [networkWorking, refreshLobbyOn]);
+
+  useEffect(() => {
+    let interval;
+    if(props.lobbyId){
+      interval = setInterval(() => {
+        refreshLobby();
+      }, 10000);
+    }
+    return () => clearInterval(interval);
+  }, [refreshLobbyOn, props.lobbyId]);
+
+  useEffect(() => {
+    if(startingTimer){
+      const interval = setInterval(() => {
+        set_startingInSeconds(time=> time-1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [startingTimer]);
+
+  useEffect(() => {
+    console.log('startingInSeconds', startingInSeconds);
+    if(startingInSeconds !== null && startingInSeconds <= 0){
+      console.log('startingInSeconds && startingInSeconds <= 0', startingInSeconds && startingInSeconds <= 0);
+      props.startGame();
+    }
+  }, [startingInSeconds]);
   
   function testNetwork(){
     console.log('Test')
     if(props.apiEndpoint && props.apiToken){
       const host = new URL(props.apiEndpoint).host;
-      set_enviorement(host.split('.')[0].match(/_\w+/)[0].replace('_','') || 'any' );
+      props.set_environment(host.split('.')[0].match(/_\w+/)[0].replace('_','') || 'any' );
       const fetchData = async () => {
         const id = await getPeerId(props.apiEndpoint, props.apiToken);
         if(id) {
           set_networkWorking(true);
-          set_peerId(id);
+          props.set_peerId(id);
         }
         else set_networkWorking(false)
       }
@@ -124,12 +158,13 @@ function App(props) {
   };
 
   async function createLobby(){
+    console.log(`/api/create-lobby`, props);
     let url = `/api/create-lobby`;
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify({
-        peerId,
-        enviorement
+        peerId: props.peerId,
+        environment: props.environment
       })
     }
     );
@@ -146,7 +181,7 @@ function App(props) {
       console.log(objDiv.scrollHeight)
       objDiv.scrollTop = objDiv.scrollHeight;
     }, 100)
-
+    set_refreshLobbyOn(true);
   };
 
   async function joinLobby(lobbyId){
@@ -156,33 +191,71 @@ function App(props) {
       method: 'POST',
       body: JSON.stringify({
         lobbyId,
-        peerId,
-        enviorement
+        peerId: props.peerId,
+        environment: props.environment
       })
     }
     );
     const json =  await response.json();
-    console.log('response', json);
 
     let tmp = JSON.parse(JSON.stringify(lobbies));
-    let index = tmp.findIndex(lobby => lobby.id === props.lobbyId);
-    tmp[index].players -= 1;
-    index = tmp.findIndex(lobby => lobby.id === lobbyId);
+    let index = tmp.findIndex(lobby => lobby.id === lobbyId);
     tmp[index].players += 1;
+    if(props.lobbyId){
+      index = tmp.findIndex(lobby => lobby.id === props.lobbyId);
+      tmp[index].players -= 1;
+      if(tmp[index].players < 0) tmp[index].players = 0;
+    }
 
     props.set_lobbyId(lobbyId);
     set_lobbies(tmp);
+    set_refreshLobbyOn(true);
+  };
+
+  async function refreshLobby(){
+    console.log('refreshLobby', props.lobbyId, props.peerId);
+    let url = `/api/refresh-lobby`;
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        lobbyId: props.lobbyId,
+        peerId: props.peerId,
+        environment: props.environment
+      })
+    });
   };
 
   async function getLobbies() {
+    console.log('getLobbies');
     let url = `/api/get-lobbies`;
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        environment: props.environment
+      })
+    });
     const json =  await response.json();
     set_lobbies(json);
   };
+
+  async function startGame(){
+    console.log('startGame', props.lobbyId, props.peerId);
+    let url = `/api/start-game`;
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        lobbyId: props.lobbyId,
+        peerId: props.peerId,
+        environment: props.environment
+      })
+    });
+    const json =  await response.json();
+    set_startingInSeconds(json.game[0].startsAtSec);
+    set_startingTimer(true);
+  };
   
   return (
-    <LobbyOverlay>
+    <SLobbyOverlay>
       <LobbyContainer>
         <ReactLogo2
           className="win-overlay--logo"
@@ -193,18 +266,18 @@ function App(props) {
         <HoprTextField
           label="apiEndpoint"
           id="filled-size-small"
-          defaultValue="Small"
           variant="filled"
           size="small"
-          value={props.apiEndpoint}
+          disabled
+          value={props.apiEndpoint ? props.apiEndpoint : ''}
         />
         <HoprTextField
           label="apiToken"
           id="filled-size-small"
-          defaultValue="Small"
           variant="filled"
           size="small"
-          value={props.apiToken}
+          disabled
+          value={props.apiToken? props.apiToken : ''}
         />
         <Row>
           <Button 
@@ -220,7 +293,7 @@ function App(props) {
           
 
         </Row>
-
+          <br></br>
         <Row>
           <Title> 
             Lobby
@@ -228,28 +301,29 @@ function App(props) {
           <Button 
               variant="outlined"
             //  disabled={!networkWorking || props.lobbyId}
-              disabled={!networkWorking}
+              disabled={!networkWorking || startingInSeconds}
               onClick={createLobby}
           >
             Create lobby
           </Button>
         </Row>
-        <p>
+        {/* <p>
           <strong>In lobby ID: </strong>{ props.lobbyId}
-        </p>
+        </p> 
         <p>
           <strong>Lobbies online:</strong>
-        </p>
+        </p>*/}
         <Lobbies
           id='lobby-list'
         >
           {
             lobbies.map(lobby => 
               <Button 
+                key={`lobby-${lobby.id}`}
                 onClick={()=>{
                   joinLobby(lobby.id);
-              
                 }}
+                disabled={lobby.open === 0}
               >
                 {
                   lobby.id ===  props.lobbyId ? 
@@ -260,13 +334,25 @@ function App(props) {
             )
           }
         </Lobbies>
-
-        {enviorement}
-        
-
+        <Button 
+          variant="outlined"
+          disabled={!props.lobbyId || startingInSeconds}
+          onClick={startGame}
+        >
+          {
+            startingInSeconds ? 
+            <span>Starts in { startingInSeconds } s</span> :
+            <span>Start Game</span>
+          }
+        </Button>
       </LobbyContainer>
-    </LobbyOverlay>
+    </SLobbyOverlay>
   );
 }
 
-export default App;
+// LobbyOverlay.defaultProps = {
+//   apiEndpoint: '',
+//   apiToken: ''
+// }
+
+export default LobbyOverlay;
