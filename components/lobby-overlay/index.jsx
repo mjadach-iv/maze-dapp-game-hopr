@@ -299,24 +299,25 @@ function LobbyOverlay(props) {
           id="filled-size-small"
           variant="filled"
           size="small"
-          disabled
           value={props.apiEndpoint ? props.apiEndpoint : ''}
+          onChange={(event)=>{props.setApiEndpoint(event.target.value)}}
         />
         <HoprTextField
           label="apiToken"
           id="filled-size-small"
           variant="filled"
           size="small"
-          disabled
           value={props.apiToken? props.apiToken : ''}
+          onChange={(event)=>{props.setApiToken(event.target.value)}}
         />
         <Row>
           <Button 
             variant="outlined"
             onClick={testNetwork}
-          >Test</Button>
+            disabled={!!props.peerId}
+          >Connect</Button>
           {
-            networkWorking ? 
+            !!props.peerId ? 
               <DoneIcon/>
               :
               <DoNotDisturbIcon/>

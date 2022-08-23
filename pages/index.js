@@ -19,7 +19,10 @@ export default function Home() {
   const childFunc = React.useRef(null);
   const hopr = React.useRef({apiToken: null, apiEndpoint: null, peerId: null, environment: null});
 
+  const [apiEndpoint, set_apiEndpoint] = useState(null);
+  const [apiToken, set_apiToken] = useState(null);
   const [peerId, set_peerId] = useState(null);
+
   const [environment, set_environment] = useState(null);
   const [players, set_players] = useState([]);
   const [map, set_map] = useState(false);
@@ -45,8 +48,11 @@ export default function Home() {
   useEffect(()=>{
     if(!router.isReady) return;
     console.log('router ready:', router)
-    hopr.current.apiToken = router.query.apiToken;
-    hopr.current.apiEndpoint = router.query.apiEndpoint;
+    // hopr.current.apiToken = router.query.apiToken;
+    // hopr.current.apiEndpoint = router.query.apiEndpoint;
+    set_apiEndpoint(router.query.apiEndpoint);
+    set_apiToken(router.query.apiToken);
+
     set_gotHoprAPI(true);
   }, [router.isReady]);
 
@@ -90,6 +96,18 @@ export default function Home() {
     set_lobby(false);
   }
 
+  function setApiEndpoint(input){
+    set_apiEndpoint(input);
+    set_peerId(null);
+    router.push(`/?apiEndpoint=${input}${apiToken?.length > 0 ? `&apiToken=${apiToken}` : ''}`)
+  }
+
+  function setApiToken(input){
+    set_apiToken(input);
+    set_peerId(null);
+    router.push(`/?${apiEndpoint?.length > 0 ? `apiEndpoint=${apiEndpoint}&` : ''}apiToken=${input}`)
+  }
+
   
   return (
     <div className="App">
@@ -109,8 +127,10 @@ export default function Home() {
       {
         lobby &&
           <LobbyOverlay
-            apiEndpoint={hopr.current.apiEndpoint}
-            apiToken={hopr.current.apiToken}
+            apiEndpoint={apiEndpoint}
+            apiToken={apiToken}
+            setApiEndpoint={setApiEndpoint}
+            setApiToken={setApiToken}
             lobbyId={lobbyId}
             set_lobbyId={set_lobbyId}
             peerId={peerId}
@@ -130,10 +150,10 @@ export default function Home() {
           />
       }
       {
-        hopr.current.apiEndpoint && hopr.current.apiToken &&
+        peerId && apiEndpoint && apiToken &&
         <WebSockerHandler
-          apiEndpoint={hopr.current.apiEndpoint}
-          apiToken={hopr.current.apiToken}
+          apiEndpoint={apiEndpoint}
+          apiToken={apiToken}
           onMessage={(input)=>{
             console.log('WS: onMessage', input);
             set_remotePos1(JSON.parse(input).postion);
