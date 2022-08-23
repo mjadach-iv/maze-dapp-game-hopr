@@ -2,9 +2,13 @@ export default function maze(y,x, constant, random) {
     // 8, 5
 	let n=x*y-1;
 	if ( n < 0 ) {
-        alert("illegal maze dimensions");return;
-    }
-  if(!random) random = Math.random();
+    alert("illegal maze dimensions");
+    return;
+  }
+
+  if(!random) {
+    random = Math.random()
+  }
 	let horiz =[]; for (var j= 0; j<x+1; j++) horiz[j]= [];
 	let verti =[]; for (var j= 0; j<x+1; j++) verti[j]= [];
 	let here = [Math.floor(random*x), Math.floor(random*y)];
@@ -28,7 +32,7 @@ export default function maze(y,x, constant, random) {
 			
 		if (neighbors.length) {
 			n = n-1;
-			let next = neighbors[Math.floor(Math.random()*neighbors.length)];
+			let next = neighbors[Math.floor((random * n % 1)*neighbors.length)];
 			unvisited[next[0]+1][next[1]+1]= false;
 			if (next[0] == here[0])
 				horiz[next[0]][(next[1]+here[1]-1)/2]= true;

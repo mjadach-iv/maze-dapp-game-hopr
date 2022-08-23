@@ -86,10 +86,11 @@ function Board(props) {
 
   const resetGame = () => {
   //  const mazeObj = createMaze(mazeWidth,mazeHeight,true);
-    const mazeObj = createMaze(mazeWidth,mazeHeight,false);
+    console.log('resetGame map', props.map)
+    const mazeObj = createMaze(mazeWidth, mazeHeight, false, props.map);
   //  console.log('mazeObj', mazeObj);
     const draw = display(mazeObj);
-   // console.log('draw', draw);
+ //   console.log('draw', draw);
 
     setMaze(mazeObj.array)
     setPlayerPosition([0,1]);
@@ -166,49 +167,49 @@ function Board(props) {
       });
     }
 
-    if (event.code === "KeyW") {
-      setPlayerPosition2((poz) => {
-        const canMove = poz[0]-1 >= 0 && maze[poz[0]-1][poz[1]] === ' ';
-        if(canMove) return [poz[0]-1,poz[1]]
-        else {
-          setShake2(true);
-          return poz
-        }
-      });
-    }
+    // if (event.code === "KeyW") {
+    //   setPlayerPosition2((poz) => {
+    //     const canMove = poz[0]-1 >= 0 && maze[poz[0]-1][poz[1]] === ' ';
+    //     if(canMove) return [poz[0]-1,poz[1]]
+    //     else {
+    //       setShake2(true);
+    //       return poz
+    //     }
+    //   });
+    // }
 
-    else if (event.code === "KeyS") {
-      setPlayerPosition2((poz) => {
-        const canMove = poz[0]+1 < maze.length && maze[poz[0]+1][poz[1]] === ' ';
-        if(canMove) return [poz[0]+1,poz[1]]
-        else {
-          setShake2(true);
-          return poz
-        }
-      });
-    }
+    // else if (event.code === "KeyS") {
+    //   setPlayerPosition2((poz) => {
+    //     const canMove = poz[0]+1 < maze.length && maze[poz[0]+1][poz[1]] === ' ';
+    //     if(canMove) return [poz[0]+1,poz[1]]
+    //     else {
+    //       setShake2(true);
+    //       return poz
+    //     }
+    //   });
+    // }
 
-    else if (event.code === "KeyA") {
-      setPlayerPosition2((poz) => {
-        const canMove = maze[poz[0]][poz[1]-1] === ' ';
-        if(canMove) return [poz[0],poz[1]-1]
-        else {
-          setShake2(true);
-          return poz
-        }
-      });
-    }
+    // else if (event.code === "KeyA") {
+    //   setPlayerPosition2((poz) => {
+    //     const canMove = maze[poz[0]][poz[1]-1] === ' ';
+    //     if(canMove) return [poz[0],poz[1]-1]
+    //     else {
+    //       setShake2(true);
+    //       return poz
+    //     }
+    //   });
+    // }
 
-    else if (event.code === "KeyD") {
-      setPlayerPosition2((poz) => {
-        const canMove = maze[poz[0]][poz[1]+1] === ' ';
-        if(canMove) return [poz[0],poz[1]+1]
-        else {
-          setShake2(true);
-          return poz
-        }
-      });
-    }
+    // else if (event.code === "KeyD") {
+    //   setPlayerPosition2((poz) => {
+    //     const canMove = maze[poz[0]][poz[1]+1] === ' ';
+    //     if(canMove) return [poz[0],poz[1]+1]
+    //     else {
+    //       setShake2(true);
+    //       return poz
+    //     }
+    //   });
+    // }
   };
 
 

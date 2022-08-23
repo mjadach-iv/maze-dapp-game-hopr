@@ -18,8 +18,8 @@ const SLobbyOverlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: calc( 100vw - 128px );
-  height: calc( 100vh - 128px );
+  width: calc( 100vw );
+  height: calc( 100vh );
   padding: 64px;
 `
 
@@ -50,6 +50,7 @@ const HoprTextField = styled(TextField)`
 const Row = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 16px;
 `
 
@@ -90,6 +91,8 @@ function LobbyOverlay(props) {
   const [startingTimer, set_startingTimer] = useState(false);
   const [startingInSeconds, set_startingInSeconds] = useState(null);
 
+  const [tempolaryMapHolder, set_tempolaryMapHolder] = useState(null);
+
   // useEffect(() => {
   //   set_networkWorking(true);
   //   props.set_environment('dev-environment');
@@ -111,7 +114,7 @@ function LobbyOverlay(props) {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [networkWorking, refreshLobbyOn]);
+  }, [networkWorking, refreshLobbyOn, startingTimer]);
 
   useEffect(() => {
     let interval;
@@ -135,10 +138,11 @@ function LobbyOverlay(props) {
   useEffect(() => {
     console.log('startingInSeconds', startingInSeconds);
     if(startingInSeconds !== null && startingInSeconds <= 0){
-      console.log('startingInSeconds && startingInSeconds <= 0', startingInSeconds && startingInSeconds <= 0);
+      console.log('startingInSeconds && startingInSeconds <= 0', startingInSeconds && startingInSeconds <= 0, tempolaryMapHolder);
+      props.set_map(tempolaryMapHolder);
       props.startGame();
     }
-  }, [startingInSeconds]);
+  }, [startingInSeconds, tempolaryMapHolder]);
   
   function testNetwork(){
     console.log('Test')
@@ -236,6 +240,15 @@ function LobbyOverlay(props) {
     });
     const json =  await response.json();
     set_lobbies(json);
+
+    if(!props.lobbyId) return;
+    let yourLobby = json.filter(lobby => lobby.id === props.lobbyId)[0];
+    if(yourLobby.startsAtSec && !startingTimer) {
+      console.log('yourLobby startsAt!', yourLobby.startsAtSec, startingTimer)
+      set_startingInSeconds(yourLobby.startsAtSec);
+      set_startingTimer(true);
+      set_tempolaryMapHolder(JSON.parse(yourLobby.map));
+    }
   };
 
   async function startGame(){
@@ -249,9 +262,11 @@ function LobbyOverlay(props) {
         environment: props.environment
       })
     });
-    const json =  await response.json();
+    const json = await response.json();
     set_startingInSeconds(json.game[0].startsAtSec);
     set_startingTimer(true);
+    props.set_players(json.peers);
+    set_tempolaryMapHolder(JSON.parse(json.game[0].map))
   };
   
   return (
@@ -301,7 +316,7 @@ function LobbyOverlay(props) {
           <Button 
               variant="outlined"
             //  disabled={!networkWorking || props.lobbyId}
-              disabled={!networkWorking || startingInSeconds}
+              disabled={!networkWorking || !!startingInSeconds}
               onClick={createLobby}
           >
             Create lobby
@@ -336,7 +351,7 @@ function LobbyOverlay(props) {
         </Lobbies>
         <Button 
           variant="outlined"
-          disabled={!props.lobbyId || startingInSeconds}
+          disabled={!props.lobbyId || !!startingInSeconds}
           onClick={startGame}
         >
           {

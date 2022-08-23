@@ -80,7 +80,8 @@ export async function getLobbies (payload) {
   console.log('MySQL: getLobbies');
   const { environment } = payload;
   let query1 = await queryDB(escape`
-    SELECT * FROM maze_lobbies 
+    SELECT *, UNIX_TIMESTAMP(startsAt)-UNIX_TIMESTAMP(NOW()) AS startsAtSec
+    FROM maze_lobbies
     WHERE maze_lobbies.timestamp >= (NOW() - INTERVAL 12 HOUR) AND enviorement = ${environment}
   `);
   let query2 = await queryDB(escape`
@@ -120,9 +121,10 @@ export async function joinLobby (payload) {
 export async function startGame (payload) {
   console.log('MySQL: startGame');
   const { peerId, environment, lobbyId } = payload;
+  let map = Math.random();
   let results = await db.transaction()
-  .query('UPDATE maze_lobbies SET open = 0, map = ?, startsAt = (NOW() + INTERVAL 11 SECOND) WHERE id = ? AND enviorement = ?', [Math.random(), lobbyId, environment])
-  .query('SELECT peerId FROM maze_players WHERE lobbyId = ? AND enviorement = ?', [lobbyId, environment])
+  .query('UPDATE maze_lobbies SET open = 0, map = ?, startsAt = (NOW() + INTERVAL 11 SECOND) WHERE id = ? AND enviorement = ?', [map, lobbyId, environment])
+  .query('SELECT peerId FROM maze_players WHERE lobbyId = ? AND enviorement = ? ORDER BY peerId ASC', [lobbyId, environment])
   .query(`SELECT 
           UNIX_TIMESTAMP(startsAt)-(UNIX_TIMESTAMP(NOW())) AS startsAtSec,
           map 
