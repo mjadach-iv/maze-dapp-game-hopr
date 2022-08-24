@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import DoneIcon from '@mui/icons-material/Done';
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
 import { getPeerId } from '../../functions/hopr-sdk';
-
+import { isValidHttpUrl } from '../../functions/shared'
 
 
 
@@ -21,6 +21,7 @@ const SLobbyOverlay = styled.div`
   width: calc( 100vw );
   min-height: calc( 100vh );
   padding: 64px;
+  height: 100%;
   @media only screen and (max-width: 500px) {
     padding: 0px;
     height: 100%;
@@ -152,8 +153,15 @@ function LobbyOverlay(props) {
   function testNetwork(){
     console.log('Test')
     if(props.apiEndpoint && props.apiToken){
-      const host = new URL(props.apiEndpoint).host;
-      props.set_environment(host.split('.')[0].match(/_\w+/)[0].replace('_','') || 'any' );
+      let host, environment = 'any';
+      try {
+        host = new URL(props.apiEndpoint).host;
+        environment = host.split('.')[0].match(/_\w+/)[0].replace('_','') || 'any';
+      } catch (e) {
+        if(props.apiEndpoint.includes('localhost') || props.apiEndpoint.includes('127.0.0.1')) environment = 'localhost';
+      }
+      props.set_environment(environment);
+      console.log('Lobby environment:', environment);
       const fetchData = async () => {
         const id = await getPeerId(props.apiEndpoint, props.apiToken);
         if(id) {
